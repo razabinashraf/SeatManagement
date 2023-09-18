@@ -1,85 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// CitiesController.cs
+using Microsoft.AspNetCore.Mvc;
 using SeatManagement.DTOs;
 using SeatManagement.Models;
 
-namespace SeatManagement.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class CitiesController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CitiesController : ControllerBase
+    private readonly ICitiesService _citiesService;
+
+    public CitiesController(ICitiesService citiesService)
     {
-        private readonly IRepository<City> _repository;
+        _citiesService = citiesService;
+    }
 
-        public CitiesController(IRepository<City> repository)
+    [HttpGet]
+    public ActionResult<IEnumerable<City>> GetCity()
+    {
+        return Ok(_citiesService.GetCities());
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<City> GetCity(int id)
+    {
+        var city = _citiesService.GetCity(id);
+
+        if (city == null)
         {
-            _repository = repository;
+            return NotFound();
         }
 
-        // GET: api/Cities
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<City>>> GetCity()
-        {
-          return _repository.GetAll();
-        }
+        return city;
+    }
 
-        // GET: api/Cities/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<City>> GetCity(int id)
-        {
-            var city =  _repository.GetById(id);
+    [HttpPut("{id}")]
+    public IActionResult PutCity(City city)
+    {
+        _citiesService.PutCity(city);
+        return Ok();
+    }
 
-            if (city == null)
-            {
-                return NotFound();
-            }
+    [HttpPost]
+    public ActionResult<City> PostCity(CityDTO cityDTO)
+    {
+        var city = _citiesService.PostCity(cityDTO);
 
-            return city;
-        }
+        return CreatedAtAction("GetCity", new { id = city.Id }, city);
+    }
 
-        // PUT: api/Cities/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCity(City city)
-        {
-
-            var item = _repository.GetById(city.Id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-            item.Name = city.Name;
-            item.Abbreviation = city.Abbreviation;
-            _repository.Update(item);
-            return Ok();
-
-        }
-
-        // POST: api/Cities
-        [HttpPost]
-        public async Task<ActionResult<City>> PostCity(CityDTO cityDTO)
-        {
-            var city = new City
-            {
-                Name = cityDTO.Name,
-                Abbreviation = cityDTO.Abbreviation
-            };
-            _repository.Add(city);
-
-            return CreatedAtAction("GetCity", new { id = city.Id }, city);
-        }
-
-        // DELETE: api/Cities/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCity(int id)
-        {
-            var city = _repository.GetById(id);
-            if (city == null)
-            {
-                return NotFound();
-            }
-
-            _repository.Delete(id);
-
-            return NoContent();
-        }
+    [HttpDelete("{id}")]
+    public IActionResult DeleteCity(int id)
+    {
+        _citiesService.DeleteCity(id);
+        return NoContent();
     }
 }

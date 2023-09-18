@@ -1,88 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// CabinRoomsController.cs
+using Microsoft.AspNetCore.Mvc;
 using SeatManagement.DTOs;
 using SeatManagement.Models;
 
-namespace SeatManagement.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class CabinRoomsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CabinRoomsController : ControllerBase
+    private readonly ICabinRoomsService _cabinRoomsService;
+
+    public CabinRoomsController(ICabinRoomsService cabinRoomsService)
     {
-        private readonly IRepository<CabinRoom> _repository;
+        _cabinRoomsService = cabinRoomsService;
+    }
 
-        public CabinRoomsController(IRepository<CabinRoom> repository)
+    [HttpGet]
+    public ActionResult<IEnumerable<CabinRoom>> GetCabinRoom()
+    {
+        return Ok(_cabinRoomsService.GetCabinRooms());
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<CabinRoom> GetCabinRoom(int id)
+    {
+        var cabinRoom = _cabinRoomsService.GetCabinRoom(id);
+
+        if (cabinRoom == null)
         {
-            _repository = repository;
+            return NotFound();
         }
 
-        // GET: api/CabinRooms
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CabinRoom>>> GetCabinRoom()
-        {
-            return _repository.GetAll();
-        }
+        return cabinRoom;
+    }
 
-        // GET: api/CabinRooms/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CabinRoom>> GetCabinRoom(int id)
-        {
-            var cabinRoom = _repository.GetById(id);
+    [HttpPut("{id}")]
+    public IActionResult PutCabinRoom(CabinRoom cabinRoom)
+    {
+        _cabinRoomsService.PutCabinRoom(cabinRoom);
+        return Ok();
+    }
 
-            if (cabinRoom == null)
-            {
-                return NotFound();
-            }
+    [HttpPost]
+    public ActionResult<CabinRoom> PostCabinRoom(CabinRoomDTO cabinRoomDTO)
+    {
+        var cabinRoom = _cabinRoomsService.PostCabinRoom(cabinRoomDTO);
 
-            return cabinRoom;
-        }
+        return CreatedAtAction("GetCabinRoom", new { id = cabinRoom.Id }, cabinRoom);
+    }
 
-        // PUT: api/CabinRooms/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCabinRoom(CabinRoom cabinRoom)
-        {
-            var item = _repository.GetById(cabinRoom.Id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-            // Update any properties of CabinRoom as needed
-            item.Name = cabinRoom.Name;
-            item.EmployeeId = cabinRoom.EmployeeId;
-            item.FacilityId = cabinRoom.FacilityId;
-            // Add any other properties you need to update
-            _repository.Update(item);
-            return Ok();
-        }
-
-        // POST: api/CabinRooms
-        [HttpPost]
-        public async Task<ActionResult<CabinRoom>> PostCabinRoom(CabinRoomDTO cabinRoomDTO)
-        {
-            var cabinRoom = new CabinRoom
-            {
-                Name = cabinRoomDTO.Name,
-                FacilityId = cabinRoomDTO.FacilityId,
-                EmployeeId = cabinRoomDTO.EmployeeId
-                // Add any other properties you need to set
-            };
-            _repository.Add(cabinRoom);
-
-            return CreatedAtAction("GetCabinRoom", new { id = cabinRoom.Id }, cabinRoom);
-        }
-
-        // DELETE: api/CabinRooms/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCabinRoom(int id)
-        {
-            var cabinRoom = _repository.GetById(id);
-            if (cabinRoom == null)
-            {
-                return NotFound();
-            }
-
-            _repository.Delete(id);
-
-            return NoContent();
-        }
+    [HttpDelete("{id}")]
+    public IActionResult DeleteCabinRoom(int id)
+    {
+        _cabinRoomsService.DeleteCabinRoom(id);
+        return NoContent();
     }
 }

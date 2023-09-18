@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SeatManagement.DTOs;
+﻿// SeatsController.cs
+using Microsoft.AspNetCore.Mvc;
 using SeatManagement.Models;
-using System.Drawing;
 
 namespace SeatManagement.Controllers
 {
@@ -9,48 +8,34 @@ namespace SeatManagement.Controllers
     [ApiController]
     public class SeatsController : ControllerBase
     {
-        private readonly IRepository<Seat> _repository;
+        private readonly ISeatsService _seatsService;
 
-        public SeatsController(IRepository<Seat> repository)
+        public SeatsController(ISeatsService seatsService)
         {
-            _repository = repository;
+            _seatsService = seatsService;
         }
 
-        // GET: api/Seats
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Seat>>> GetSeats()
+        public ActionResult<IEnumerable<Seat>> GetSeats()
         {
-            return _repository.GetAll();
+            return Ok(_seatsService.GetSeats());
         }
 
         [HttpGet]
         [Route("free")]
-        public async Task<ActionResult<IEnumerable<Seat>>> GetFreeSeats()
+        public ActionResult<IEnumerable<Seat>> GetFreeSeats()
         {
-            var freeSeats = _repository.GetAll().Where(x => x.EmployeeId == null);
             string seatNumber = HttpContext.Request.Query["seatNumber"];
             string floorNumber = HttpContext.Request.Query["floorNumber"];
             string cityId = HttpContext.Request.Query["cityId"];
-            if (seatNumber != null)
-            {
-                freeSeats = freeSeats.Where(x => x.SeatNumber == Convert.ToInt32(seatNumber));
-            }
-            if (floorNumber != null)
-            {
-                freeSeats = freeSeats.Where(x => x.Facility.FloorNumber == Convert.ToInt32(floorNumber));
-            }
-            if (cityId != null)
-            {
-                freeSeats = freeSeats.Where(x => x.Facility.CityId == Convert.ToInt32(cityId));
-            }
-            return freeSeats.ToList();
+
+            return Ok(_seatsService.GetFreeSeats(seatNumber, floorNumber, cityId));
         }
 
-        // GET: api/Seats/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Seat>> GetSeat(int id)
+        public ActionResult<Seat> GetSeat(int id)
         {
-            var seat = _repository.GetById(id);
+            var seat = _seatsService.GetSeat(id);
 
             if (seat == null)
             {
@@ -61,71 +46,33 @@ namespace SeatManagement.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Seat>> PostSeats(SeatDTO[] seatDTOs)
+        public ActionResult PostSeats(SeatDTO[] seatDTOs)
         {
-
-            foreach (var st in seatDTOs)
-            {
-                Seat seat = new Seat();
-                seat.SeatNumber = st.SeatNumber;
-                seat.EmployeeId = null;
-                seat.FacilityId = st.FacilityId;
-                _repository.Add(seat);
-            }
+            _seatsService.PostSeats(seatDTOs);
             return NoContent();
-
         }
 
-        // POST: api/Seats
         [HttpPost]
         [Route("allocate")]
-        public async Task<ActionResult<Seat>> AllocateSeat(SeatDTO seatDTO)
+        public ActionResult AllocateSeat(SeatDTO seatDTO)
         {
-
-
-            var seat = _repository.GetAll().Where(x => x.EmployeeId == null && x.SeatNumber == seatDTO.SeatNumber && x.FacilityId==seatDTO.FacilityId).FirstOrDefault();
-
-            seat.EmployeeId = null;
-
+            _seatsService.AllocateSeat(seatDTO);
             return NoContent();
         }
 
-
-
-        // DELETE: api/Seats/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSeat(int id)
+        public ActionResult DeleteSeat(int id)
         {
-            var seat = _repository.GetById(id);
-            if (seat == null)
-            {
-                return NotFound();
-            }
-
-            _repository.Delete(id);
-
+            _seatsService.DeleteSeat(id);
             return NoContent();
         }
+
         [HttpPost]
         [Route("deallocate")]
-        public async Task<IActionResult> DeAllocateSeat(int id, Seat seat)
+        public ActionResult DeallocateSeat(int id, Seat seat)
         {
-            if (id != seat.Id)
-            {
-                return BadRequest();
-            }
-
-            var existingSeat = _repository.GetById(id);
-            if (existingSeat == null)
-            {
-                return NotFound();
-            }
-
-            // Update any properties of Seat as needed
-            existingSeat.EmployeeId = null;
-            // Add any other properties you need to update
-            _repository.Update(existingSeat);
-            return Ok();
+            _seatsService.DeallocateSeat(id, seat);
+            return NoContent();
         }
     }
 }

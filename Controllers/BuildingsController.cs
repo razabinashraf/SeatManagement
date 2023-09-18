@@ -1,95 +1,59 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿// BuildingsController.cs
+using Microsoft.AspNetCore.Mvc;
 using SeatManagement.DTOs;
 using SeatManagement.Models;
-using System.Xml.Linq;
 
-namespace SeatManagement.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class BuildingsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BuildingsController : ControllerBase
+    private readonly IBuildingsService _buildingsService;
+
+    public BuildingsController(IBuildingsService buildingsService)
     {
-        private readonly IRepository<Building> _repository;
+        _buildingsService = buildingsService;
+    }
 
-        public BuildingsController(IRepository<Building> repository)
+    [HttpGet]
+    public ActionResult<IEnumerable<Building>> GetBuilding()
+    {
+        string nameFilter = HttpContext.Request.Query["Name"].ToString();
+        var buildings = _buildingsService.GetBuildings(nameFilter);
+        return Ok(buildings);
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<Building> GetBuilding(int id)
+    {
+        var building = _buildingsService.GetBuilding(id);
+
+        if (building == null)
         {
-            _repository = repository;
+            return NotFound();
         }
 
-        // GET: api/Buildings
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Building>>> GetBuilding()
-        {
-            string Name = HttpContext.Request.Query["Name"];
-            // [FromQuery] string Name
-            if (Name != null)
-            {
-                var filteredBuildings = _repository.GetAll().Where(building => building.Name == Name).ToList();
-                return filteredBuildings;
-            }
-            return _repository.GetAll();
-        }
+        return building;
+    }
 
-        // GET: api/Buildings/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Building>> GetBuilding(int id)
-        {
-            var building = _repository.GetById(id);
+    [HttpPut("{id}")]
+    public IActionResult PutBuilding(Building building)
+    {
+        _buildingsService.PutBuilding(building);
+        return Ok();
+    }
 
-            if (building == null)
-            {
-                return NotFound();
-            }
+    [HttpPost]
+    public ActionResult<Building> PostBuilding(BuildingDTO buildingDTO)
+    {
+        var building = _buildingsService.PostBuilding(buildingDTO);
 
-            return building;
-        }
+        return CreatedAtAction("GetBuilding", new { id = building.Id }, building);
+    }
 
-        // PUT: api/Buildings/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBuilding(Building building)
-        {
-            var item = _repository.GetById(building.Id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-            // Update any properties of Building as needed
-            item.Name = building.Name;
-            item.Abbreviation = building.Abbreviation;
-            // Add any other properties you need to update
-            _repository.Update(item);
-            return Ok();
-        }
-
-        // POST: api/Buildings
-        [HttpPost]
-        public async Task<ActionResult<Building>> PostBuilding(BuildingDTO buildingDTO)
-        {
-            var building = new Building
-            {
-                Name = buildingDTO.Name,
-                Abbreviation = buildingDTO.Abbrevation
-                // Add any other properties you need to set
-            };
-            _repository.Add(building);
-
-            return CreatedAtAction("GetBuilding", new { id = building.Id }, building);
-        }
-
-        // DELETE: api/Buildings/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBuilding(int id)
-        {
-            var building = _repository.GetById(id);
-            if (building == null)
-            {
-                return NotFound();
-            }
-
-            _repository.Delete(id);
-
-            return NoContent();
-        }
+    [HttpDelete("{id}")]
+    public IActionResult DeleteBuilding(int id)
+    {
+        _buildingsService.DeleteBuilding(id);
+        return NoContent();
     }
 }

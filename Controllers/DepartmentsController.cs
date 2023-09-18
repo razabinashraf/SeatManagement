@@ -1,83 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// DepartmentsController.cs
+using Microsoft.AspNetCore.Mvc;
 using SeatManagement.DTOs;
 using SeatManagement.Models;
 
-namespace SeatManagement.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class DepartmentsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DepartmentsController : ControllerBase
+    private readonly IDepartmentsService _departmentsService;
+
+    public DepartmentsController(IDepartmentsService departmentsService)
     {
-        private readonly IRepository<Department> _repository;
+        _departmentsService = departmentsService;
+    }
 
-        public DepartmentsController(IRepository<Department> repository)
+    [HttpGet]
+    public ActionResult<IEnumerable<Department>> GetDepartment()
+    {
+        return Ok(_departmentsService.GetDepartments());
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<Department> GetDepartment(int id)
+    {
+        var department = _departmentsService.GetDepartment(id);
+
+        if (department == null)
         {
-            _repository = repository;
+            return NotFound();
         }
 
-        // GET: api/Departments
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Department>>> GetDepartment()
-        {
-            return _repository.GetAll();
-        }
+        return department;
+    }
 
-        // GET: api/Departments/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Department>> GetDepartment(int id)
-        {
-            var department = _repository.GetById(id);
+    [HttpPut("{id}")]
+    public IActionResult PutDepartment(Department department)
+    {
+        _departmentsService.PutDepartment(department);
+        return Ok();
+    }
 
-            if (department == null)
-            {
-                return NotFound();
-            }
+    [HttpPost]
+    public ActionResult<Department> PostDepartment(DepartmentDTO departmentDTO)
+    {
+        var department = _departmentsService.PostDepartment(departmentDTO);
 
-            return department;
-        }
+        return CreatedAtAction("GetDepartment", new { id = department.Id }, department);
+    }
 
-        // PUT: api/Departments/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDepartment(Department department)
-        {
-            var item = _repository.GetById(department.Id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-            item.Name = department.Name;
-            // Add any other properties you need to update
-            _repository.Update(item);
-            return Ok();
-        }
-
-        // POST: api/Departments
-        [HttpPost]
-        public async Task<ActionResult<Department>> PostDepartment(DepartmentDTO departmentDTO)
-        {
-            var department = new Department
-            {
-                Name = departmentDTO.Name,
-                // Add any other properties you need to set
-            };
-            _repository.Add(department);
-
-            return CreatedAtAction("GetDepartment", new { id = department.Id }, department);
-        }
-
-        // DELETE: api/Departments/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDepartment(int id)
-        {
-            var department = _repository.GetById(id);
-            if (department == null)
-            {
-                return NotFound();
-            }
-
-            _repository.Delete(id);
-
-            return NoContent();
-        }
+    [HttpDelete("{id}")]
+    public IActionResult DeleteDepartment(int id)
+    {
+        _departmentsService.DeleteDepartment(id);
+        return NoContent();
     }
 }

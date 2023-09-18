@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SeatManagement.DTOs;
+using SeatManagement.Interfaces;
 using SeatManagement.Models;
 
 namespace SeatManagement.Controllers
@@ -8,25 +9,25 @@ namespace SeatManagement.Controllers
     [ApiController]
     public class FacilitiesController : ControllerBase
     {
-        private readonly IRepository<Facility> _repository;
+        private readonly IFacilitiesService _facilitiesService;
 
-        public FacilitiesController(IRepository<Facility> repository)
+        public FacilitiesController(IFacilitiesService facilitiesService)
         {
-            _repository = repository;
+            _facilitiesService = facilitiesService;
         }
 
         // GET: api/Facilities
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Facility>>> GetFacility()
         {
-            return _repository.GetAll();
+            return Ok(_facilitiesService.GetFacility());
         }
 
         // GET: api/Facilities/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Facility>> GetFacility(int id)
         {
-            var facility = _repository.GetById(id);
+            var facility = _facilitiesService.GetFacility(id);
 
             if (facility == null)
             {
@@ -40,18 +41,7 @@ namespace SeatManagement.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFacility(Facility facility)
         {
-            var item = _repository.GetById(facility.Id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-            // Update any properties of Facility as needed
-            item.Name = facility.Name;
-            item.FloorNumber = facility.FloorNumber;
-            item.CityId = facility.CityId;
-            item.BuildingId = facility.BuildingId;
-            // Add any other properties you need to update
-            _repository.Update(item);
+            _facilitiesService.PutFacility(facility);
             return Ok();
         }
 
@@ -59,15 +49,7 @@ namespace SeatManagement.Controllers
         [HttpPost]
         public async Task<ActionResult<Facility>> PostFacility(FacilityDTO facilityDTO)
         {
-            var facility = new Facility
-            {
-                Name = facilityDTO.Name,
-                FloorNumber = facilityDTO.FloorNumber,
-                CityId = facilityDTO.CityId,
-                BuildingId = facilityDTO.BuildingId,
-                // Add any other properties you need to set
-            };
-            _repository.Add(facility);
+            var facility = _facilitiesService.PostFacility(facilityDTO);
 
             return CreatedAtAction("GetFacility", new { id = facility.Id }, facility);
         }
@@ -76,14 +58,7 @@ namespace SeatManagement.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFacility(int id)
         {
-            var facility = _repository.GetById(id);
-            if (facility == null)
-            {
-                return NotFound();
-            }
-
-            _repository.Delete(id);
-
+            _facilitiesService.DeleteFacility(id);
             return NoContent();
         }
     }

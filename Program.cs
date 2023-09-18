@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SeatManagement;
+using SeatManagement.Interfaces;
 using SeatManagement.Models;
+using SeatManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,17 @@ builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
 builder.Services.AddScoped<IRepository<Facility>, Repository<Facility>>();
 builder.Services.AddScoped<IRepository<MeetingRoom>, Repository<MeetingRoom>>();
 builder.Services.AddScoped<IRepository<Seat>, Repository<Seat>>();
+
+builder.Services.AddScoped<IAllocatedAssetsService, AllocatedAssetsService>();
+builder.Services.AddScoped<IAssetsService, AssetsService>();
+builder.Services.AddScoped<IBuildingsService , BuildingsService>();
+builder.Services.AddScoped<ICabinRoomsService, CabinRoomsService>();
+builder.Services.AddScoped<ICitiesService , CitiesService>();
+builder.Services.AddScoped<IDepartmentsService , DepartmentsService>();
+builder.Services.AddScoped<IEmployeesService , EmployeesService>();
+builder.Services.AddScoped<IFacilitiesService, FacilitiesService>();
+builder.Services.AddScoped<IMeetingRoomsService , MeetingRoomsService>();
+builder.Services.AddScoped<ISeatsService, SeatsService>();
 
 
 
