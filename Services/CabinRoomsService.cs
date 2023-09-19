@@ -8,7 +8,9 @@ using System.Collections.Generic;
 
 public class CabinRoomsService : ICabinRoomsService
 {
-    private readonly IRepository<CabinRoom> _repository;
+    //private readonly IRepository<CabinRoom> _repository;
+    private readonly ICabinRoomRepository _repository;
+
     private readonly IRepository<Seat> _seatRepository;
     private readonly IRepository<Employee> _employeeRepository;
     private readonly IRepository<Facility> _facilityRepository;
@@ -17,7 +19,9 @@ public class CabinRoomsService : ICabinRoomsService
     private readonly SeatManagementDbContext _context;
 
     public CabinRoomsService(
-        IRepository<CabinRoom> repository,
+        //IRepository<CabinRoom> repository,
+        ICabinRoomRepository repository,
+
         IRepository<Seat> seatRepository,
         IRepository<Employee> employeeRepository,
         IRepository<Facility> facilityRepository,

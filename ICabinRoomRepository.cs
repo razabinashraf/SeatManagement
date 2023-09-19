@@ -5,14 +5,14 @@ namespace SeatManagement
 {
     public interface ICabinRoomRepository
     {
-        public void Add(Seat item);
+        public void Add(CabinRoom item);
 
-        public void Update(Seat item);
+        public void Update(CabinRoom item);
 
         public void Delete(int id);
 
-        public Seat GetById(int id);
+        public CabinRoom GetById(int id);
 
-        public Seat[] GetAll();
+        public CabinRoom[] GetAll();
     }
 }

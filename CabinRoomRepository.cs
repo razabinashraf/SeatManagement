@@ -11,13 +11,13 @@ namespace SeatManagement
             _context = context;
         }
 
-        public void Add(Seat item)
+        public void Add(CabinRoom item)
         {
-            _context.Set<Seat>().Add(item);
+            _context.Set<CabinRoom>().Add(item);
             _context.SaveChanges();
         }
 
-        public void Update(Seat item)
+        public void Update(CabinRoom item)
         {
             _context.Entry(item).State = EntityState.Modified;
             _context.SaveChanges();
@@ -26,18 +26,18 @@ namespace SeatManagement
         public void Delete(int id)
         {
             var item = GetById(id);
-            _context.Set<Seat>().Remove(item);
+            _context.Set<CabinRoom>().Remove(item);
             _context.SaveChanges();
         }
 
-        public Seat GetById(int id)
+        public CabinRoom GetById(int id)
         {
-            return _context.Set<Seat>().Find(id);
+            return _context.Set<CabinRoom>().Find(id);
         }
 
-        public Seat[] GetAll()
+        public CabinRoom[] GetAll()
         {
-            return _context.Set<Seat>().Include(x => x.Facility).ToArray();
+            return _context.Set<CabinRoom>().Include(x => x.Facility).ToArray();
         }
     }
 }
