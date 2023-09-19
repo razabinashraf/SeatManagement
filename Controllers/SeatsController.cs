@@ -1,5 +1,6 @@
 ﻿// SeatsController.cs
 using Microsoft.AspNetCore.Mvc;
+using SeatManagement.Exceptions;
 using SeatManagement.Models;
 
 namespace SeatManagement.Controllers
@@ -9,6 +10,7 @@ namespace SeatManagement.Controllers
     public class SeatsController : ControllerBase
     {
         private readonly ISeatsService _seatsService;
+
 
         public SeatsController(ISeatsService seatsService)
         {
@@ -25,11 +27,24 @@ namespace SeatManagement.Controllers
         [Route("free")]
         public ActionResult<IEnumerable<Seat>> GetFreeSeats()
         {
-            string seatNumber = HttpContext.Request.Query["seatNumber"];
-            string floorNumber = HttpContext.Request.Query["floorNumber"];
-            string cityId = HttpContext.Request.Query["cityId"];
+            try
+            {
+                string seatNumber = HttpContext.Request.Query["seatNumber"];
+                string floorNumber = HttpContext.Request.Query["floorNumber"];
+                string cityId = HttpContext.Request.Query["cityId"];
+                string facilityName = HttpContext.Request.Query["facilityName"];
 
-            return Ok(_seatsService.GetFreeSeats(seatNumber, floorNumber, cityId));
+                return Ok(_seatsService.GetFreeSeats(seatNumber, floorNumber, cityId, facilityName));
+            }
+            catch (ExceptionWhileAdding ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            
         }
 
         [HttpGet("{id}")]

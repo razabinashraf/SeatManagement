@@ -16,13 +16,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IRepository<AllocatedAsset>, Repository<AllocatedAsset>>();
 builder.Services.AddScoped<IRepository<Asset>, Repository<Asset>>();
 builder.Services.AddScoped<IRepository<Building>, Repository<Building>>();
-builder.Services.AddScoped<IRepository<CabinRoom>, Repository<CabinRoom>>();
+builder.Services.AddScoped<IRepository<Seat>, Repository<Seat>>();
 builder.Services.AddScoped<IRepository<City>, Repository<City>>();
 builder.Services.AddScoped<IRepository<Department>, Repository<Department>>();
 builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
 builder.Services.AddScoped<IRepository<Facility>, Repository<Facility>>();
 builder.Services.AddScoped<IRepository<MeetingRoom>, Repository<MeetingRoom>>();
 builder.Services.AddScoped<IRepository<Seat>, Repository<Seat>>();
+builder.Services.AddScoped<IRepository<CabinRoom>, Repository<CabinRoom>>();
+builder.Services.AddScoped<ICabinRoomRepository, CabinRoomRepository>();
+
 
 builder.Services.AddScoped<IAllocatedAssetsService, AllocatedAssetsService>();
 builder.Services.AddScoped<IAssetsService, AssetsService>();

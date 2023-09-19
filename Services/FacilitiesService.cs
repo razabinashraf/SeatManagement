@@ -1,4 +1,5 @@
 ﻿using SeatManagement.DTOs;
+using SeatManagement.Exceptions;
 using SeatManagement.Interfaces;
 using SeatManagement.Models;
 
@@ -7,10 +8,13 @@ namespace SeatManagement.Services
     public class FacilitiesService : IFacilitiesService
     {
         private readonly IRepository<Facility> _repository;
-
-        public FacilitiesService(IRepository<Facility> repository)
+        private readonly IRepository<Building> _buildingRepository;
+        private readonly IRepository<City> _cityRepository;
+        public FacilitiesService(IRepository<Facility> repository, IRepository<Building> buildingRepository, IRepository<City> cityRepository)
         {
             _repository = repository;
+            _buildingRepository = buildingRepository;
+            _cityRepository = cityRepository;
         }
 
         public IEnumerable<Facility> GetFacility()
@@ -44,6 +48,14 @@ namespace SeatManagement.Services
 
         public Facility PostFacility(FacilityDTO facilityDTO)
         {
+            if(_buildingRepository.GetById(facilityDTO.BuildingId) == null)
+            {
+                throw new ExceptionWhileAdding("Building does not exist");
+            }
+            if (_cityRepository.GetById(facilityDTO.CityId) == null)
+            {
+                throw new ExceptionWhileAdding("City does not exist");
+            }
             var facility = new Facility
             {
                 Name = facilityDTO.Name,
@@ -58,12 +70,12 @@ namespace SeatManagement.Services
 
         public void DeleteFacility(int id)
         {
+
             var facility = _repository.GetById(id);
             if (facility == null)
             {
                 return;
             }
-
             _repository.Delete(id);
 
             return;

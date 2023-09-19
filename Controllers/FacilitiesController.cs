@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SeatManagement.DTOs;
+using SeatManagement.Exceptions;
 using SeatManagement.Interfaces;
 using SeatManagement.Models;
 
@@ -49,9 +50,25 @@ namespace SeatManagement.Controllers
         [HttpPost]
         public async Task<ActionResult<Facility>> PostFacility(FacilityDTO facilityDTO)
         {
-            var facility = _facilitiesService.PostFacility(facilityDTO);
+            if(facilityDTO == null)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                var facility = _facilitiesService.PostFacility(facilityDTO);
 
-            return CreatedAtAction("GetFacility", new { id = facility.Id }, facility);
+                return CreatedAtAction("GetFacility", new { id = facility.Id }, facility);
+            }
+            catch (ExceptionWhileAdding ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            
         }
 
         // DELETE: api/Facilities/5

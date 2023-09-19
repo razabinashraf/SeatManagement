@@ -3,9 +3,12 @@
 namespace SeatManagement.Models
 {
     public class CabinRoom
+
     {
         public int Id { get; set; }
         public string Name { get; set; }
+
+        public string Number { get; set; }
         [ForeignKey("Facility")]
         public int FacilityId { get; set; }
         [ForeignKey("Employee")]

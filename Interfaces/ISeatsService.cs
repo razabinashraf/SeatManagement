@@ -4,7 +4,7 @@ using SeatManagement.Models;
 public interface ISeatsService
 {
     IEnumerable<Seat> GetSeats();
-    IEnumerable<Seat> GetFreeSeats(string seatNumber, string floorNumber, string cityId);
+    IEnumerable<Seat> GetFreeSeats(string seatNumber, string floorNumber, string cityId, string facilityName);
     Seat GetSeat(int id);
     void AllocateSeat(SeatDTO seatDTO);
     void DeallocateSeat(int id, Seat seat);

@@ -1,14 +1,31 @@
 ﻿// SeatsService.cs
 using SeatManagement.Models;
 using SeatManagement;
+using SeatManagement.DTOs;
+using SeatManagement.Exceptions;
 
 public class SeatsService : ISeatsService
 {
     private readonly IRepository<Seat> _repository;
+    private readonly IRepository<Facility> _facilityRepository;
+    private readonly IRepository<Building> _buildingRepository;
+    private readonly IRepository<City> _cityRepository;
+    private readonly IRepository<Seat> _seatRepository;
+    private readonly IRepository<Seat> _cabinRoomRepository;
+    private readonly SeatManagementDbContext _context;
 
-    public SeatsService(IRepository<Seat> repository)
+    public SeatsService(
+        IRepository<Seat> repository,
+        IRepository<City> cityRepository,
+        IRepository<Seat> seatRepository,
+        IRepository<Seat> cabinRoomRepository,
+        SeatManagementDbContext context)
     {
         _repository = repository;
+        _cityRepository = cityRepository;
+        _seatRepository = seatRepository;
+        _cabinRoomRepository = cabinRoomRepository;
+        _context = context;
     }
 
     public IEnumerable<Seat> GetSeats()
@@ -16,7 +33,7 @@ public class SeatsService : ISeatsService
         return _repository.GetAll();
     }
 
-    public IEnumerable<Seat> GetFreeSeats(string seatNumber, string floorNumber, string cityId)
+    public IEnumerable<Seat> GetFreeSeats(string seatNumber, string floorNumber, string cityId, string facilityName)
     {
         var freeSeats = _repository.GetAll().Where(x => x.EmployeeId == null);
 
@@ -28,8 +45,16 @@ public class SeatsService : ISeatsService
         {
             freeSeats = freeSeats.Where(x => x.Facility.FloorNumber == Convert.ToInt32(floorNumber));
         }
+        if (!string.IsNullOrEmpty(facilityName))
+        {
+            freeSeats = freeSeats.Where(x => x.Facility.Name == facilityName);
+        }
         if (!string.IsNullOrEmpty(cityId))
         {
+            if (_cityRepository.GetById(Convert.ToInt32(cityId)) == null)
+            {
+                throw new ExceptionWhileAdding("City Id is invalid");
+            }
             freeSeats = freeSeats.Where(x => x.Facility.CityId == Convert.ToInt32(cityId));
         }
 
@@ -43,10 +68,22 @@ public class SeatsService : ISeatsService
 
     public void AllocateSeat(SeatDTO seatDTO)
     {
+        if(seatDTO == null)
+        {
+            throw new ExceptionWhileAdding("Details not provided");
+        }
+        if(_seatRepository.GetAll().Where(x => x.EmployeeId == seatDTO.EmployeeId).Count() > 0)
+        {
+            throw new ExceptionWhileAdding("Employee is already allocated a seat");
+        }
+
+        if (_cabinRoomRepository.GetAll().Where(x => x.EmployeeId == seatDTO.EmployeeId).Count() > 0)
+        {
+            throw new ExceptionWhileAdding("Employee is already allocated a cabin");
+        }
         var seat = _repository.GetAll().FirstOrDefault(x => x.EmployeeId == null && x.SeatNumber == seatDTO.SeatNumber && x.FacilityId == seatDTO.FacilityId);
         if (seat != null)
         {
-            // Allocate the seat
             seat.EmployeeId = seatDTO.EmployeeId;
             _repository.Update(seat);
         }
