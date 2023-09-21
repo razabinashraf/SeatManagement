@@ -6,7 +6,9 @@ using SeatManagement.Exceptions;
 
 public class SeatsService : ISeatsService
 {
-    private readonly IRepository<Seat> _repository;
+    //private readonly IRepository<Seat> _repository;
+    private readonly ISeatRepository _repository;
+
     private readonly IRepository<Facility> _facilityRepository;
     private readonly IRepository<Building> _buildingRepository;
     private readonly IRepository<City> _cityRepository;
@@ -15,7 +17,7 @@ public class SeatsService : ISeatsService
     private readonly SeatManagementDbContext _context;
 
     public SeatsService(
-        IRepository<Seat> repository,
+        ISeatRepository repository,
         IRepository<City> cityRepository,
         IRepository<Seat> seatRepository,
         IRepository<Seat> cabinRoomRepository,

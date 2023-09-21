@@ -37,7 +37,7 @@ namespace SeatManagement
 
         public Seat[] GetAll()
         {
-            return _context.Set<Seat>().Include(x => x.Facility).ToArray();
+            return _context.Set<Seat>().Include(x => x.Facility.Building).Include(x => x.Facility.City).ToArray();
         }
     }
 }

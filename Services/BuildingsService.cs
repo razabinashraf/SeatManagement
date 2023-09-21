@@ -2,6 +2,7 @@
 using SeatManagement.DTOs;
 using SeatManagement.Models;
 using SeatManagement;
+using SeatManagement.Exceptions;
 
 public class BuildingsService : IBuildingsService
 {
@@ -12,7 +13,7 @@ public class BuildingsService : IBuildingsService
         _repository = repository;
     }
 
-    public IEnumerable<Building> GetBuildings(string nameFilter = null)
+    public IEnumerable<Building> GetBuildings()
     {
         var buildings = _repository.GetAll();
 
@@ -22,22 +23,13 @@ public class BuildingsService : IBuildingsService
     public Building GetBuilding(int id)
     {
         var building = _repository.GetById(id);
+        if (building == null)
+        {
+            throw new ExceptionWhileFetching("Building id is invalid");
+        }        
         return building;
     }
 
-    public void PutBuilding(Building building)
-    {
-        var item = _repository.GetById(building.Id);
-        if (item == null)
-        {
-            return;
-        }
-        // Update any properties of Building as needed
-        item.Name = building.Name;
-        item.Abbreviation = building.Abbreviation;
-        // Add any other properties you need to update
-        _repository.Update(item);
-    }
 
     public Building PostBuilding(BuildingDTO buildingDTO)
     {
@@ -49,15 +41,5 @@ public class BuildingsService : IBuildingsService
         };
         _repository.Add(building);
         return building;
-    }
-
-    public void DeleteBuilding(int id)
-    {
-        var building = _repository.GetById(id);
-        if (building == null)
-        {
-            return;
-        }
-        _repository.Delete(id);
     }
 }

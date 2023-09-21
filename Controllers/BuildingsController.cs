@@ -1,6 +1,7 @@
 ﻿// BuildingsController.cs
 using Microsoft.AspNetCore.Mvc;
 using SeatManagement.DTOs;
+using SeatManagement.Exceptions;
 using SeatManagement.Models;
 
 [Route("api/[controller]")]
@@ -17,30 +18,28 @@ public class BuildingsController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Building>> GetBuilding()
     {
-        string nameFilter = HttpContext.Request.Query["Name"].ToString();
-        var buildings = _buildingsService.GetBuildings(nameFilter);
+        var buildings = _buildingsService.GetBuildings();
         return Ok(buildings);
     }
 
     [HttpGet("{id}")]
     public ActionResult<Building> GetBuilding(int id)
     {
-        var building = _buildingsService.GetBuilding(id);
-
-        if (building == null)
+        try
         {
-            return NotFound();
+            var building = _buildingsService.GetBuilding(id);
+            return Ok(building);
         }
-
-        return building;
+        catch (ExceptionWhileFetching ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
     }
 
-    [HttpPut("{id}")]
-    public IActionResult PutBuilding(Building building)
-    {
-        _buildingsService.PutBuilding(building);
-        return Ok();
-    }
 
     [HttpPost]
     public ActionResult<Building> PostBuilding(BuildingDTO buildingDTO)
@@ -50,10 +49,4 @@ public class BuildingsController : ControllerBase
         return CreatedAtAction("GetBuilding", new { id = building.Id }, building);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult DeleteBuilding(int id)
-    {
-        _buildingsService.DeleteBuilding(id);
-        return NoContent();
-    }
 }

@@ -33,12 +33,6 @@ public class DepartmentsController : ControllerBase
         return department;
     }
 
-    [HttpPut("{id}")]
-    public IActionResult PutDepartment(Department department)
-    {
-        _departmentsService.PutDepartment(department);
-        return Ok();
-    }
 
     [HttpPost]
     public ActionResult<Department> PostDepartment(DepartmentDTO departmentDTO)
@@ -48,10 +42,4 @@ public class DepartmentsController : ControllerBase
         return CreatedAtAction("GetDepartment", new { id = department.Id }, department);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult DeleteDepartment(int id)
-    {
-        _departmentsService.DeleteDepartment(id);
-        return NoContent();
-    }
 }

@@ -4,9 +4,7 @@ using SeatManagement.Models;
 
 public interface IBuildingsService
 {
-    IEnumerable<Building> GetBuildings(string nameFilter = null);
+    IEnumerable<Building> GetBuildings();
     Building GetBuilding(int id);
-    void PutBuilding(Building building);
     Building PostBuilding(BuildingDTO buildingDTO);
-    void DeleteBuilding(int id);
 }

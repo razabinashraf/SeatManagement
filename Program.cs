@@ -25,6 +25,7 @@ builder.Services.AddScoped<IRepository<MeetingRoom>, Repository<MeetingRoom>>();
 builder.Services.AddScoped<IRepository<Seat>, Repository<Seat>>();
 builder.Services.AddScoped<IRepository<CabinRoom>, Repository<CabinRoom>>();
 builder.Services.AddScoped<ICabinRoomRepository, CabinRoomRepository>();
+builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 
 
 builder.Services.AddScoped<IAllocatedAssetsService, AllocatedAssetsService>();

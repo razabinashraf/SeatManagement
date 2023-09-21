@@ -40,18 +40,10 @@ public class EmployeesController : ControllerBase
         return Ok();
     }
 
-    [Route("bulkadd")]
     [HttpPost]
-    public IActionResult PostSeats(EmployeeDTO[] employeeDTOs)
+    public ActionResult<Employee> PostEmployee(EmployeeDTO[] employeeDTO)
     {
-        _employeesService.BulkAddEmployees(employeeDTOs);
-        return NoContent();
-    }
-
-    [HttpPost]
-    public ActionResult<Employee> PostEmployee(EmployeeDTO employeeDTO)
-    {
-        var employee = _employeesService.PostEmployee(employeeDTO);
+        var employee = _employeesService.PostEmployees(employeeDTO);
 
         return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
     }

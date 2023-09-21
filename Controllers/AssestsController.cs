@@ -1,6 +1,7 @@
 ﻿// AssetsController.cs
 using Microsoft.AspNetCore.Mvc;
 using SeatManagement.DTOs;
+using SeatManagement.Exceptions;
 using SeatManagement.Models;
 
 [Route("api/[controller]")]
@@ -23,21 +24,21 @@ public class AssetsController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<Asset> GetAsset(int id)
     {
-        var asset = _assetsService.GetAsset(id);
-
-        if (asset == null)
+        try
         {
-            return NotFound();
+            var asset = _assetsService.GetAsset(id);
+            return Ok(asset);
         }
+        catch(ExceptionWhileFetching ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+        
 
-        return asset;
-    }
-
-    [HttpPut("{id}")]
-    public IActionResult PutAsset(Asset asset)
-    {
-        _assetsService.PutAsset(asset);
-        return Ok();
     }
 
     [HttpPost]
@@ -48,10 +49,4 @@ public class AssetsController : ControllerBase
         return CreatedAtAction("GetAsset", new { id = asset.Id }, asset);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult DeleteAsset(int id)
-    {
-        _assetsService.DeleteAsset(id);
-        return NoContent();
-    }
 }

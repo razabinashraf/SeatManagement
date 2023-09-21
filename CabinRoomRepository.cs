@@ -37,7 +37,7 @@ namespace SeatManagement
 
         public CabinRoom[] GetAll()
         {
-            return _context.Set<CabinRoom>().Include(x => x.Facility).ToArray();
+            return _context.Set<CabinRoom>().Include(x => x.Facility.Building).Include(x => x.Facility.City).ToArray();
         }
     }
 }

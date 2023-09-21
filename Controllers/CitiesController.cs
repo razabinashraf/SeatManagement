@@ -33,12 +33,6 @@ public class CitiesController : ControllerBase
         return city;
     }
 
-    [HttpPut("{id}")]
-    public IActionResult PutCity(City city)
-    {
-        _citiesService.PutCity(city);
-        return Ok();
-    }
 
     [HttpPost]
     public ActionResult<City> PostCity(CityDTO cityDTO)
@@ -48,10 +42,4 @@ public class CitiesController : ControllerBase
         return CreatedAtAction("GetCity", new { id = city.Id }, city);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult DeleteCity(int id)
-    {
-        _citiesService.DeleteCity(id);
-        return NoContent();
-    }
 }

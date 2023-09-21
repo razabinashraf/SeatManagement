@@ -6,7 +6,5 @@ public interface ICitiesService
 {
     IEnumerable<City> GetCities();
     City GetCity(int id);
-    void PutCity(City city);
     City PostCity(CityDTO cityDTO);
-    void DeleteCity(int id);
 }

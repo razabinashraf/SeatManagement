@@ -37,18 +37,6 @@ public class EmployeesService : IEmployeesService
         _repository.Update(item);
     }
 
-    public Employee PostEmployee(EmployeeDTO employeeDTO)
-    {
-        var employee = new Employee
-        {
-            Name = employeeDTO.Name,
-            DepartmentId = employeeDTO.DepartmentId,
-            // Add any other properties you need to set
-        };
-        _repository.Add(employee);
-        return employee;
-    }
-
     public void DeleteEmployee(int id)
     {
         var employee = _repository.GetById(id);
@@ -59,7 +47,7 @@ public class EmployeesService : IEmployeesService
         _repository.Delete(id);
     }
 
-    public void BulkAddEmployees(EmployeeDTO[] employeeDTOs)
+    public void PostEmployees(EmployeeDTO[] employeeDTOs)
     {
         foreach (var em in employeeDTOs)
         {

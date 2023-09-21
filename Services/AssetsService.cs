@@ -3,6 +3,7 @@ using SeatManagement.DTOs;
 using SeatManagement;
 using SeatManagement.Models;
 using SeatManagement.Interfaces;
+using SeatManagement.Exceptions;
 
 public class AssetsService : IAssetsService
 {
@@ -21,20 +22,13 @@ public class AssetsService : IAssetsService
     public Asset GetAsset(int id)
     {
         var asset = _repository.GetById(id);
+        if(asset == null)
+        {
+            throw new ExceptionWhileFetching("Asset id is invalid");
+        }
         return asset;
     }
 
-    public void PutAsset(Asset asset)
-    {
-        var item = _repository.GetById(asset.Id);
-        if (item == null)
-        {
-            return;
-        }
-        item.Name = asset.Name;
-        // Add any other properties you need to update
-        _repository.Update(item);
-    }
 
     public Asset PostAsset(AssetDTO assetDTO)
     {
@@ -47,13 +41,4 @@ public class AssetsService : IAssetsService
         return asset;
     }
 
-    public void DeleteAsset(int id)
-    {
-        var asset = _repository.GetById(id);
-        if (asset == null)
-        {
-            return;
-        }
-        _repository.Delete(id);
-    }
 }

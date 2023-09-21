@@ -23,19 +23,6 @@ public class CitiesService : ICitiesService
         return city;
     }
 
-    public void PutCity(City city)
-    {
-        var item = _repository.GetById(city.Id);
-        if (item == null)
-        {
-            return;
-        }
-        // Update any properties of City as needed
-        item.Name = city.Name;
-        item.Abbreviation = city.Abbreviation;
-        // Add any other properties you need to update
-        _repository.Update(item);
-    }
 
     public City PostCity(CityDTO cityDTO)
     {
@@ -49,13 +36,4 @@ public class CitiesService : ICitiesService
         return city;
     }
 
-    public void DeleteCity(int id)
-    {
-        var city = _repository.GetById(id);
-        if (city == null)
-        {
-            return;
-        }
-        _repository.Delete(id);
-    }
 }
