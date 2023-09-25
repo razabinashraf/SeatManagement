@@ -42,7 +42,8 @@ public class AllocatedAssetsService : IAllocatedAssetsService
         var allocatedAsset = new AllocatedAsset
         {
             AssetId = allocatedAssetDTO.AssetId,
-            // Add any other properties you need to set
+            MeetingRoomId = allocatedAssetDTO.MeetingRoomId,
+            Quantity = allocatedAssetDTO.Quantity,
         };
         _repository.Add(allocatedAsset);
         return allocatedAsset;

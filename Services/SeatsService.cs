@@ -68,7 +68,7 @@ public class SeatsService : ISeatsService
         return _repository.GetById(id);
     }
 
-    public void AllocateSeat(SeatDTO seatDTO)
+    public void AllocateSeat(SeatDTO seatDTO, int seatId)
     {
         if(seatDTO == null)
         {
@@ -83,7 +83,7 @@ public class SeatsService : ISeatsService
         {
             throw new ExceptionWhileAdding("Employee is already allocated a cabin");
         }
-        var seat = _repository.GetAll().FirstOrDefault(x => x.EmployeeId == null && x.SeatNumber == seatDTO.SeatNumber && x.FacilityId == seatDTO.FacilityId);
+        var seat = _repository.GetAll().FirstOrDefault(x => x.EmployeeId == null && x.Id == seatId && x.FacilityId == seatDTO.FacilityId);
         if (seat != null)
         {
             seat.EmployeeId = seatDTO.EmployeeId;
@@ -91,12 +91,11 @@ public class SeatsService : ISeatsService
         }
     }
 
-    public void DeallocateSeat(int id, Seat seat)
+    public void DeallocateSeat(int id)
     {
         var existingSeat = _repository.GetById(id);
         if (existingSeat != null)
         {
-            // Deallocate the seat
             existingSeat.EmployeeId = null;
             _repository.Update(existingSeat);
         }
@@ -108,10 +107,9 @@ public class SeatsService : ISeatsService
         {
             var seat = new Seat
             {
-                SeatNumber = seatDTO.SeatNumber,
+                SeatNumber = (int)seatDTO.SeatNumber,
                 EmployeeId = null,
                 FacilityId = seatDTO.FacilityId
-                // Add any other properties you need to set
             };
             _repository.Add(seat);
         }

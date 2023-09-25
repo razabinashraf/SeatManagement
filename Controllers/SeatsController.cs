@@ -29,10 +29,10 @@ namespace SeatManagement.Controllers
         {
             try
             {
-                string seatNumber = HttpContext.Request.Query["seatNumber"];
-                string floorNumber = HttpContext.Request.Query["floorNumber"];
                 string cityId = HttpContext.Request.Query["cityId"];
                 string facilityName = HttpContext.Request.Query["facilityName"];
+                string seatNumber = HttpContext.Request.Query["seatNumber"];
+                string floorNumber = HttpContext.Request.Query["floorNumber"];
 
                 return Ok(_seatsService.GetFreeSeats(seatNumber, floorNumber, cityId, facilityName));
             }
@@ -68,11 +68,23 @@ namespace SeatManagement.Controllers
         }
 
         [HttpPost]
-        [Route("allocate")]
-        public ActionResult AllocateSeat(SeatDTO seatDTO)
+        [Route("{id}/allocation")]
+        public ActionResult AllocateSeat(SeatDTO seatDTO,int id)
         {
-            _seatsService.AllocateSeat(seatDTO);
-            return NoContent();
+            try
+            {
+                _seatsService.AllocateSeat(seatDTO, id);
+                return NoContent();
+            }
+            catch (ExceptionWhileAdding ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpDelete("{id}")]
@@ -82,11 +94,11 @@ namespace SeatManagement.Controllers
             return NoContent();
         }
 
-        [HttpPost]
-        [Route("deallocate")]
-        public ActionResult DeallocateSeat(int id, Seat seat)
+        [HttpDelete]
+        [Route("{id}/allocation")]
+        public ActionResult DeallocateSeat(int id)
         {
-            _seatsService.DeallocateSeat(id, seat);
+            _seatsService.DeallocateSeat(id);
             return NoContent();
         }
     }

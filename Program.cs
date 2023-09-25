@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SeatManagement;
+using SeatManagement.CustomMiddlewares;
 using SeatManagement.Interfaces;
 using SeatManagement.Models;
 using SeatManagement.Services;
@@ -57,5 +58,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();

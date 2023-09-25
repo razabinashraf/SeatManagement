@@ -34,10 +34,6 @@ public class BuildingsController : ControllerBase
         {
             return NotFound(ex.Message);
         }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
     }
 
 

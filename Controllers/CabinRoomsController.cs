@@ -47,9 +47,8 @@ public class CabinRoomsController : ControllerBase
     [HttpPost]
     public ActionResult<CabinRoom> PostCabinRoom(CabinRoomDTO cabinRoomDTO)
     {
-        //cabinRoomDTO.Number = $"{cityAbb}-{buildingAbb}-{floor}-{facilityName}-{cabinRoomDTO.Number}";
-        //if()
-        cabinRoomDTO.Number = $"C{cabinRoomDTO.Number}";
+        
+        
         var cabinRoom = _cabinRoomsService.PostCabinRoom(cabinRoomDTO);
 
         return CreatedAtAction("GetCabinRoom", new { id = cabinRoom.Id }, cabinRoom);
@@ -68,12 +67,28 @@ public class CabinRoomsController : ControllerBase
     {
         try
         {
-            string seatNumber = HttpContext.Request.Query["seatNumber"];
-            string floorNumber = HttpContext.Request.Query["floorNumber"];
             string cityId = HttpContext.Request.Query["cityId"];
             string facilityName = HttpContext.Request.Query["facilityName"];
+            string floorNumber = HttpContext.Request.Query["floorNumber"];
+            string cabinNumber = HttpContext.Request.Query["cabinNumber"];
 
-            return Ok(_cabinRoomsService.GetFreeCabinRooms(seatNumber, floorNumber, cityId, facilityName));
+            return Ok(_cabinRoomsService.GetFreeCabinRooms(cabinNumber, floorNumber, cityId, facilityName));
+        }
+        catch (ExceptionWhileAdding ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+    }
+
+    [HttpPost]
+    [Route("{id}/allocation")]
+    public ActionResult AllocateCabinRoom(CabinRoomDTO cabinRoomDTO, int id)
+    {
+        try
+        {
+            _cabinRoomsService.AllocateCabinRoom(cabinRoomDTO, id);
+            return Ok();
         }
         catch (ExceptionWhileAdding ex)
         {
@@ -81,24 +96,16 @@ public class CabinRoomsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            return BadRequest(ex.Message);
         }
 
     }
 
-    [HttpPost]
-    [Route("allocate")]
-    public ActionResult AllocateCabinRoom(CabinRoomDTO cabinRoomDTO)
+    [HttpDelete]
+    [Route("{id}/allocation")]
+    public ActionResult DeallocateSeat(int id)
     {
-        _cabinRoomsService.AllocateCabinRoom(cabinRoomDTO);
-        return NoContent();
-    }
-
-    [HttpPost]
-    [Route("deallocate")]
-    public ActionResult DeallocateCabinRoom(int id, CabinRoomDTO cabinRoomDTO)
-    {
-        _cabinRoomsService.DeallocateCabinRoom(id, cabinRoomDTO);
-        return NoContent();
+        _cabinRoomsService.DeallocateCabinRoom(id);
+        return Ok();
     }
 }

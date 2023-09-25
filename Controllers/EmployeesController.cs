@@ -43,9 +43,9 @@ public class EmployeesController : ControllerBase
     [HttpPost]
     public ActionResult<Employee> PostEmployee(EmployeeDTO[] employeeDTO)
     {
-        var employee = _employeesService.PostEmployees(employeeDTO);
+        _employeesService.PostEmployees(employeeDTO);
 
-        return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
+        return Ok();
     }
 
     [HttpDelete("{id}")]

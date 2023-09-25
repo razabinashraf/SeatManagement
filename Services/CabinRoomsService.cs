@@ -3,18 +3,16 @@ using SeatManagement.DTOs;
 using SeatManagement.Models;
 using SeatManagement;
 using SeatManagement.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 public class CabinRoomsService : ICabinRoomsService
 {
     //private readonly IRepository<CabinRoom> _repository;
     private readonly ICabinRoomRepository _repository;
-
+    private readonly IRepository<Facility> _facilityRepository;
     private readonly IRepository<Seat> _seatRepository;
     private readonly IRepository<Employee> _employeeRepository;
-    private readonly IRepository<Facility> _facilityRepository;
     private readonly IRepository<City> _cityRepository;
+    private readonly IRepository<CabinRoom> _cabinRoomRepository;
 
     private readonly SeatManagementDbContext _context;
 
@@ -26,6 +24,7 @@ public class CabinRoomsService : ICabinRoomsService
         IRepository<Employee> employeeRepository,
         IRepository<Facility> facilityRepository,
         IRepository<City> cityRepository,
+        IRepository<CabinRoom> cabinRoomRepository,
         SeatManagementDbContext context
         )
     {
@@ -34,6 +33,7 @@ public class CabinRoomsService : ICabinRoomsService
         _employeeRepository = employeeRepository;
         _facilityRepository = facilityRepository;
         _cityRepository = cityRepository;
+        _cabinRoomRepository = cabinRoomRepository;
         _context = context;
     }
 
@@ -71,6 +71,8 @@ public class CabinRoomsService : ICabinRoomsService
 
     public CabinRoom PostCabinRoom(CabinRoomDTO cabinRoomDTO)
     {
+        cabinRoomDTO.Number = (_cabinRoomRepository.GetAll().Where(x => x.FacilityId == cabinRoomDTO.FacilityId).ToList().Count + 1).ToString();
+        cabinRoomDTO.Number = $"C{cabinRoomDTO.Number}";
         var cabinRoom = new CabinRoom
         {
             Name = cabinRoomDTO.Name,
@@ -121,7 +123,7 @@ public class CabinRoomsService : ICabinRoomsService
         return freeCabinRooms.ToList();
     }
 
-    public void AllocateCabinRoom(CabinRoomDTO cabinRoomDTO)
+    public void AllocateCabinRoom(CabinRoomDTO cabinRoomDTO, int cabinId)
     {
         if (cabinRoomDTO == null)
         {
@@ -144,7 +146,7 @@ public class CabinRoomsService : ICabinRoomsService
         }
     }
 
-    public void DeallocateCabinRoom(int id, CabinRoomDTO cabinRoomDTO)
+    public void DeallocateCabinRoom(int id)
     {
         var existingCabinRoom = _repository.GetById(id);
         if (existingCabinRoom == null)

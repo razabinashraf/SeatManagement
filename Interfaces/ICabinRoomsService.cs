@@ -10,6 +10,6 @@ public interface ICabinRoomsService
     CabinRoom PostCabinRoom(CabinRoomDTO cabinRoomDTO);
     void DeleteCabinRoom(int id);
     IEnumerable<CabinRoom> GetFreeCabinRooms(string cabinNumber, string floorNumber, string cityId, string facilityName);
-    void AllocateCabinRoom(CabinRoomDTO cabinRoomDTO);
-    void DeallocateCabinRoom(int id, CabinRoomDTO cabinRoomDTO);
+    void AllocateCabinRoom(CabinRoomDTO cabinRoomDTO, int id);
+    void DeallocateCabinRoom(int id);
 }
